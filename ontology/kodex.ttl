@@ -1,0 +1,712 @@
+# =============================================================================
+# KoDEX (Korean Old Document Extended Schema) Ontology
+# Version: 1.0
+# Date: 2025
+# Author: SHIN Eunseon (신은선)
+# Repository: https://github.com/SHINEUNSUN1027/AKSDH
+# Permanent URI: https://w3id.org/kodex/
+# License: CC BY 4.0
+# Description:
+#   RDF/OWL ontology for semantic standardization of Korean classical document
+#   (고문헌) metadata. Designed as an extension of BIBFRAME 2.0, with
+#   supplementary use of SKOS, FOAF, and CIDOC-CRM.
+# =============================================================================
+
+# --- Namespace Declarations --------------------------------------------------
+
+@prefix kodex:   <https://w3id.org/kodex/> .
+@prefix bf:      <http://id.loc.gov/ontologies/bibframe/> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix crm:     <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix schema:  <https://schema.org/> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+
+
+# =============================================================================
+# ONTOLOGY METADATA
+# =============================================================================
+
+<https://w3id.org/kodex/>
+    a owl:Ontology ;
+    rdfs:label "KoDEX 온톨로지"@ko ,
+               "KoDEX Ontology"@en ;
+    rdfs:comment
+        "한국 고문헌 메타데이터의 시맨틱 표준화를 위한 RDF/OWL 온톨로지. BIBFRAME 2.0을 주축으로 하며 SKOS·FOAF·CIDOC-CRM을 보완적으로 활용한다."@ko ,
+        "RDF/OWL ontology for semantic standardization of Korean classical document metadata. BIBFRAME 2.0 is the core vocabulary, supplemented by SKOS, FOAF, and CIDOC-CRM."@en ;
+    owl:versionInfo "1.0" ;
+    dcterms:created "2025"^^xsd:gYear ;
+    dcterms:creator <https://w3id.org/kodex/person/Shin-Eunseon> ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> .
+
+
+# =============================================================================
+# SECTION 1. CORE CLASSES (핵심 클래스)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 1.1 Bibliographic Entity Classes (서지 개체 클래스)
+# -----------------------------------------------------------------------------
+
+kodex:ClassicalWork
+    a owl:Class ;
+    rdfs:subClassOf bf:Work ;
+    rdfs:label "고문헌 저작"@ko , "Classical Work"@en ;
+    rdfs:comment
+        "한국 고문헌의 저작 수준 개체. 개념적 내용, 원저작자, 저술 시기, 주제 등 저작 수준 정보를 기술한다."@ko .
+
+kodex:Edition
+    a owl:Class ;
+    rdfs:subClassOf bf:Instance ;
+    rdfs:label "판본"@ko , "Edition"@en ;
+    rdfs:comment
+        "고문헌의 특정 판본. 목판본·필사본·활자본 등 판본 유형, 간행 시기, 간행처, 판각자 등을 기술한다."@ko .
+
+kodex:HoldingItem
+    a owl:Class ;
+    rdfs:subClassOf bf:Item ;
+    rdfs:label "소장본"@ko , "Holding Item"@en ;
+    rdfs:comment
+        "특정 기관이 소장하는 고문헌 실물 자료. 소장 기관, 청구기호, 디지털화 여부 등을 기술한다."@ko .
+
+kodex:PhysicalDescription
+    a owl:Class ;
+    rdfs:label "물리 기술"@ko , "Physical Description"@en ;
+    rdfs:comment
+        "광곽·어미·판구·계선 등 고문헌의 물리적 특징을 구조화하여 표현하는 클래스. KORMARC 300 $b 형태코드에 대응한다."@ko .
+
+
+# -----------------------------------------------------------------------------
+# 1.2 Agent Classes (에이전트 클래스)
+# -----------------------------------------------------------------------------
+
+kodex:Person
+    a owl:Class ;
+    rdfs:subClassOf foaf:Person ;
+    rdfs:label "인물"@ko , "Person"@en ;
+    rdfs:comment
+        "고문헌과 관련된 저자·편자·주석자·필사자·교감자·판각자 등의 인물을 표현한다."@ko .
+
+kodex:Organization
+    a owl:Class ;
+    rdfs:subClassOf foaf:Organization ;
+    rdfs:label "단체·기관"@ko , "Organization"@en ;
+    rdfs:comment
+        "고문헌의 간행처·소장 기관 등 단체를 표현한다. 사찰·서원·관아·문중 등을 포괄한다."@ko .
+
+
+# -----------------------------------------------------------------------------
+# 1.3 Contextual Classes (맥락 정보 클래스)
+# -----------------------------------------------------------------------------
+
+kodex:PublicationEvent
+    a owl:Class ;
+    rdfs:label "간행 사건"@ko , "Publication Event"@en ;
+    rdfs:comment
+        "고문헌의 간행 사건을 표현한다. CIDOC-CRM E12_Production을 개념적으로 참조하여 설계하였으며, 간행 주체·장소·시기 및 불확실 정보를 기술한다."@ko .
+
+kodex:Place
+    a owl:Class ;
+    rdfs:subClassOf bf:Place ;
+    rdfs:label "장소"@ko , "Place"@en ;
+    rdfs:comment
+        "고문헌의 간행지·소장지 등 장소 정보를 표현한다. 조선시대 지명과 현대 지명의 대응 관계를 skos:altLabel로 병기한다."@ko .
+
+
+# =============================================================================
+# SECTION 2. PROPERTIES (속성 정의)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 2.1 Bibliographic Relation Properties (서지 관계 속성)
+# -----------------------------------------------------------------------------
+
+kodex:hasVariant
+    a owl:ObjectProperty ;
+    rdfs:domain kodex:ClassicalWork ;
+    rdfs:range  kodex:ClassicalWork ;
+    rdfs:label "이본"@ko , "has variant"@en ;
+    rdfs:comment "동일 저작의 이본 관계를 표현한다."@ko .
+
+kodex:hasEditionType
+    a owl:ObjectProperty ;
+    rdfs:domain kodex:Edition ;
+    rdfs:range  skos:Concept ;
+    rdfs:label "판본 유형"@ko , "has edition type"@en ;
+    rdfs:comment "판본의 유형을 SKOS 통제 어휘(kodex:EditionTypeScheme)와 연결한다."@ko .
+
+kodex:hasPublicationEvent
+    a owl:ObjectProperty ;
+    rdfs:domain kodex:Edition ;
+    rdfs:range  kodex:PublicationEvent ;
+    rdfs:label "간행 사건"@ko , "has publication event"@en ;
+    rdfs:comment "판본과 간행 사건을 연결한다."@ko .
+
+kodex:hasPhysicalDescription
+    a owl:ObjectProperty ;
+    rdfs:domain kodex:HoldingItem ;
+    rdfs:range  kodex:PhysicalDescription ;
+    rdfs:label "물리 기술"@ko , "has physical description"@en ;
+    rdfs:comment "소장본과 물리 기술 정보를 연결한다."@ko .
+
+kodex:variantType
+    a owl:ObjectProperty ;
+    rdfs:domain kodex:Edition ;
+    rdfs:range  skos:Concept ;
+    rdfs:label "이본 유형"@ko , "variant type"@en ;
+    rdfs:comment "이본의 유형을 SKOS 통제 어휘로 연결한다."@ko .
+
+
+# -----------------------------------------------------------------------------
+# 2.2 Agent Role Properties (에이전트 역할 속성)
+# -----------------------------------------------------------------------------
+
+kodex:hasRole
+    a owl:ObjectProperty ;
+    rdfs:domain kodex:Person ;
+    rdfs:range  kodex:RoleType ;
+    rdfs:label "역할"@ko , "has role"@en ;
+    rdfs:comment "인물이 특정 고문헌에 대해 수행한 역할 유형을 연결한다."@ko .
+
+kodex:copyist
+    a owl:ObjectProperty ;
+    rdfs:domain kodex:Edition ;
+    rdfs:range  kodex:Person ;
+    rdfs:label "필사자"@ko , "copyist"@en ;
+    rdfs:comment "필사본을 베껴 쓴 인물. MARC Relator에 대응 항목 없어 확장 정의."@ko .
+
+kodex:collator
+    a owl:ObjectProperty ;
+    rdfs:domain kodex:Edition ;
+    rdfs:range  kodex:Person ;
+    rdfs:label "교감자"@ko , "collator"@en ;
+    rdfs:comment "판본의 교감(校勘)을 담당한 인물."@ko .
+
+kodex:woodblockCarver
+    a owl:ObjectProperty ;
+    rdfs:domain kodex:PublicationEvent ;
+    rdfs:range  kodex:Person ;
+    rdfs:label "판각자"@ko , "woodblock carver"@en ;
+    rdfs:comment "목판을 새긴 인물."@ko .
+
+kodex:approximateCreator
+    a owl:DatatypeProperty ;
+    rdfs:domain kodex:ClassicalWork ;
+    rdfs:range  rdfs:Literal ;
+    rdfs:label "추정 저자"@ko , "approximate creator"@en ;
+    rdfs:comment "저자 미상인 경우 추정 저자를 텍스트로 기술한다."@ko .
+
+
+# -----------------------------------------------------------------------------
+# 2.3 Publication Event Properties (간행 사건 속성)
+# -----------------------------------------------------------------------------
+
+kodex:publishedBy
+    a owl:ObjectProperty ;
+    rdfs:domain kodex:PublicationEvent ;
+    rdfs:range  kodex:Organization ;
+    rdfs:label "간행 주체"@ko , "published by"@en ;
+    rdfs:comment "간행 사건의 주체 단체·기관."@ko .
+
+kodex:publishedAt
+    a owl:ObjectProperty ;
+    rdfs:domain kodex:PublicationEvent ;
+    rdfs:range  kodex:Place ;
+    rdfs:label "간행 장소"@ko , "published at"@en ;
+    rdfs:comment "간행 사건이 발생한 장소."@ko .
+
+kodex:approximateDate
+    a owl:DatatypeProperty ;
+    rdfs:domain kodex:PublicationEvent ;
+    rdfs:range  rdfs:Literal ;
+    rdfs:label "추정 연대"@ko , "approximate date"@en ;
+    rdfs:comment "간행 연대가 불명확한 경우 추정 연대를 텍스트로 기술한다."@ko .
+
+kodex:dateUncertainty
+    a owl:DatatypeProperty ;
+    rdfs:domain kodex:PublicationEvent ;
+    rdfs:range  rdfs:Literal ;
+    rdfs:label "연대 불확실성"@ko , "date uncertainty"@en ;
+    rdfs:comment "간행 연대의 불확실성 사유 및 근거를 기술한다."@ko .
+
+
+# -----------------------------------------------------------------------------
+# 2.4 Physical Description Properties (물리 기술 속성)
+# KORMARC 300 $b 식별기호 대응
+# -----------------------------------------------------------------------------
+
+# 객체 속성: SKOS 통제 어휘 연결 -----------------------------------------
+
+kodex:gwangwak
+    a owl:ObjectProperty ;
+    rdfs:domain kodex:PhysicalDescription ;
+    rdfs:range  kodex:GwangwakType ;
+    rdfs:label "광곽"@ko , "border frame"@en ;
+    rdfs:comment "고문헌 판면의 광곽 유형. KORMARC 300 $b 코드 02 대응."@ko .
+
+kodex:eomi
+    a owl:ObjectProperty ;
+    rdfs:domain kodex:PhysicalDescription ;
+    rdfs:range  kodex:EomiType ;
+    rdfs:label "어미"@ko , "fish-tail ornament"@en ;
+    rdfs:comment "고문헌 판심의 어미 유형. KORMARC 300 $b 코드 08 대응."@ko .
+
+kodex:panggu
+    a owl:ObjectProperty ;
+    rdfs:domain kodex:PhysicalDescription ;
+    rdfs:range  kodex:PangguType ;
+    rdfs:label "판구"@ko , "page border type"@en ;
+    rdfs:comment "고문헌의 판구 유형. KORMARC 300 $b 코드 07 대응."@ko .
+
+# 데이터 속성: 리터럴 값 기술 ---------------------------------------------
+
+kodex:gyeseon
+    a owl:DatatypeProperty ;
+    rdfs:domain kodex:PhysicalDescription ;
+    rdfs:range  rdfs:Literal ;
+    rdfs:label "계선"@ko , "column line"@en ;
+    rdfs:comment "계선 유무 및 유형. KORMARC 300 $b 코드 04 대응."@ko .
+
+kodex:haengsu
+    a owl:DatatypeProperty ;
+    rdfs:domain kodex:PhysicalDescription ;
+    rdfs:range  xsd:integer ;
+    rdfs:label "행수"@ko , "lines per page"@en ;
+    rdfs:comment "반엽 기준 행수."@ko .
+
+kodex:jasu
+    a owl:DatatypeProperty ;
+    rdfs:domain kodex:PhysicalDescription ;
+    rdfs:range  xsd:integer ;
+    rdfs:label "자수"@ko , "characters per line"@en ;
+    rdfs:comment "행당 자수."@ko .
+
+kodex:jijeol
+    a owl:DatatypeProperty ;
+    rdfs:domain kodex:PhysicalDescription ;
+    rdfs:range  rdfs:Literal ;
+    rdfs:label "지절"@ko , "paper folding"@en ;
+    rdfs:comment "지절(紙折) 방식."@ko .
+
+kodex:inbyeon
+    a owl:DatatypeProperty ;
+    rdfs:domain kodex:PhysicalDescription ;
+    rdfs:range  rdfs:Literal ;
+    rdfs:label "인변"@ko , "print border condition"@en ;
+    rdfs:comment "인변(印邊) 상태."@ko .
+
+kodex:nakwan
+    a owl:DatatypeProperty ;
+    rdfs:domain kodex:PhysicalDescription ;
+    rdfs:range  rdfs:Literal ;
+    rdfs:label "낙관"@ko , "seal impression"@en ;
+    rdfs:comment "낙관(落款) 유무."@ko .
+
+
+# =============================================================================
+# SECTION 3. CONTROLLED VOCABULARIES (통제 어휘)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 3.1 Edition Type Vocabulary (판본 유형 통제 어휘)
+# -----------------------------------------------------------------------------
+
+kodex:EditionTypeScheme
+    a skos:ConceptScheme ;
+    skos:prefLabel "KoDEX 판본 유형 통제 어휘"@ko ,
+                   "KoDEX Edition Type Vocabulary"@en ;
+    dcterms:created "2025"^^xsd:gYear ;
+    dcterms:creator <https://w3id.org/kodex/person/Shin-Eunseon> .
+
+kodex:MokpanBon
+    a skos:Concept ;
+    skos:inScheme kodex:EditionTypeScheme ;
+    skos:prefLabel "목판본"@ko ;
+    skos:altLabel  "木板本"@zh , "木版本"@zh ,
+                   "판각본"@ko , "板刻本"@zh ,
+                   "각본"@ko  , "刻本"@zh ,
+                   "조판본"@ko , "彫板本"@zh ;
+    skos:narrower  kodex:BungakBon , kodex:BojokBon ;
+    skos:definition "목판에 글자를 새겨 인쇄한 판본"@ko ;
+    dcterms:source <https://encykorea.aks.ac.kr/Article/E0018719> .
+
+kodex:BungakBon
+    a skos:Concept ;
+    skos:inScheme kodex:EditionTypeScheme ;
+    skos:prefLabel "번각본"@ko ;
+    skos:altLabel  "飜刻本"@zh , "복각본"@ko , "覆刻本"@zh ;
+    skos:broader   kodex:MokpanBon ;
+    skos:definition "원판을 모방하여 다시 새긴 판본"@ko ;
+    dcterms:source <https://encykorea.aks.ac.kr/Article/E0080098> .
+
+kodex:BojokBon
+    a skos:Concept ;
+    skos:inScheme kodex:EditionTypeScheme ;
+    skos:prefLabel "보각본"@ko ;
+    skos:altLabel  "補刻本"@zh ;
+    skos:broader   kodex:MokpanBon ;
+    skos:definition "훼손된 원판의 일부를 보완하여 새긴 판본"@ko ;
+    dcterms:source <https://encykorea.aks.ac.kr/Article/E0026202> .
+
+kodex:MokHwaljaBon
+    a skos:Concept ;
+    skos:inScheme kodex:EditionTypeScheme ;
+    skos:prefLabel "목활자본"@ko ;
+    skos:altLabel  "木活字本"@zh ;
+    skos:definition "나무로 만든 활자를 조판하여 찍어낸 판본"@ko ;
+    dcterms:source <https://encykorea.aks.ac.kr/Article/E0018754> .
+
+kodex:GeumsokhwaljaBon
+    a skos:Concept ;
+    skos:inScheme kodex:EditionTypeScheme ;
+    skos:prefLabel "금속활자본"@ko ;
+    skos:altLabel  "金屬活字本"@zh , "주자본"@ko , "鑄字本"@zh ;
+    skos:definition "납이나 구리 등의 금속으로 만든 활자를 조판하여 찍어낸 판본"@ko ;
+    dcterms:source <https://encykorea.aks.ac.kr/Article/E0007871> .
+
+kodex:PilsaBon
+    a skos:Concept ;
+    skos:inScheme kodex:EditionTypeScheme ;
+    skos:prefLabel "필사본"@ko ;
+    skos:altLabel  "筆寫本"@zh , "사본"@ko , "寫本"@zh ,
+                   "전사본"@ko , "轉寫本"@zh ;
+    skos:definition "손으로 직접 베껴 쓴 판본"@ko ;
+    dcterms:source <https://opendict.korean.go.kr/dictionary/view?sense_no=312877> .
+
+
+# -----------------------------------------------------------------------------
+# 3.2 Border Frame Type Vocabulary (광곽 유형 통제 어휘)
+# KORMARC 300 $b 코드 02 대응
+# -----------------------------------------------------------------------------
+
+kodex:GwangwakTypeScheme
+    a skos:ConceptScheme ;
+    skos:prefLabel "KoDEX 광곽 유형 통제 어휘"@ko ,
+                   "KoDEX Border Frame Type Vocabulary"@en .
+
+kodex:GwangwakType
+    a owl:Class ;
+    rdfs:subClassOf skos:Concept ;
+    rdfs:label "광곽 유형"@ko , "Border Frame Type"@en .
+
+kodex:SajuDanbyeon
+    a kodex:GwangwakType , skos:Concept ;
+    skos:inScheme kodex:GwangwakTypeScheme ;
+    skos:prefLabel "사주단변"@ko , "四周單邊"@zh ;
+    skos:definition "판면 사방을 단선으로 두른 광곽"@ko .
+
+kodex:SajuSsangbyeon
+    a kodex:GwangwakType , skos:Concept ;
+    skos:inScheme kodex:GwangwakTypeScheme ;
+    skos:prefLabel "사주쌍변"@ko , "四周雙邊"@zh ;
+    skos:definition "판면 사방을 쌍선으로 두른 광곽"@ko .
+
+kodex:JwauSsangbyeon
+    a kodex:GwangwakType , skos:Concept ;
+    skos:inScheme kodex:GwangwakTypeScheme ;
+    skos:prefLabel "좌우쌍변"@ko , "左右雙邊"@zh ;
+    skos:definition "판면의 좌우만 쌍선으로 두른 광곽"@ko .
+
+kodex:SajuMubyeon
+    a kodex:GwangwakType , skos:Concept ;
+    skos:inScheme kodex:GwangwakTypeScheme ;
+    skos:prefLabel "사주무변"@ko , "四周無邊"@zh ;
+    skos:definition "판면 사방에 광곽이 없는 형태"@ko .
+
+
+# -----------------------------------------------------------------------------
+# 3.3 Fish-tail Ornament Type Vocabulary (어미 유형 통제 어휘)
+# KORMARC 300 $b 코드 08 대응
+# -----------------------------------------------------------------------------
+
+kodex:EomiTypeScheme
+    a skos:ConceptScheme ;
+    skos:prefLabel "KoDEX 어미 유형 통제 어휘"@ko ,
+                   "KoDEX Fish-tail Ornament Type Vocabulary"@en .
+
+kodex:EomiType
+    a owl:Class ;
+    rdfs:subClassOf skos:Concept ;
+    rdfs:label "어미 유형"@ko , "Fish-tail Ornament Type"@en .
+
+kodex:SangHaHyangHaekEomi
+    a kodex:EomiType , skos:Concept ;
+    skos:inScheme kodex:EomiTypeScheme ;
+    skos:prefLabel "상하향흑어미"@ko , "上下向黑魚尾"@zh ;
+    skos:definition "상하 모두 안쪽을 향하는 흑어미"@ko .
+
+kodex:SangHyangHaekEomi
+    a kodex:EomiType , skos:Concept ;
+    skos:inScheme kodex:EomiTypeScheme ;
+    skos:prefLabel "상향흑어미"@ko , "上向黑魚尾"@zh ;
+    skos:definition "위쪽만 안쪽을 향하는 흑어미"@ko .
+
+kodex:SangHwaMunEomi
+    a kodex:EomiType , skos:Concept ;
+    skos:inScheme kodex:EomiTypeScheme ;
+    skos:prefLabel "상화문어미"@ko , "上花紋魚尾"@zh ;
+    skos:definition "위쪽에 화문(꽃무늬)이 새겨진 어미"@ko .
+
+kodex:SangHaHwaMunEomi
+    a kodex:EomiType , skos:Concept ;
+    skos:inScheme kodex:EomiTypeScheme ;
+    skos:prefLabel "상하화문어미"@ko , "上下花紋魚尾"@zh ;
+    skos:definition "상하 모두 화문이 새겨진 어미"@ko .
+
+kodex:MuEomi
+    a kodex:EomiType , skos:Concept ;
+    skos:inScheme kodex:EomiTypeScheme ;
+    skos:prefLabel "무어미"@ko , "無魚尾"@zh ;
+    skos:definition "어미가 없는 형태"@ko .
+
+
+# -----------------------------------------------------------------------------
+# 3.4 Page Border Type Vocabulary (판구 유형 통제 어휘)
+# KORMARC 300 $b 코드 07 대응
+# -----------------------------------------------------------------------------
+
+kodex:PangguTypeScheme
+    a skos:ConceptScheme ;
+    skos:prefLabel "KoDEX 판구 유형 통제 어휘"@ko ,
+                   "KoDEX Page Border Type Vocabulary"@en .
+
+kodex:PangguType
+    a owl:Class ;
+    rdfs:subClassOf skos:Concept ;
+    rdfs:label "판구 유형"@ko , "Page Border Type"@en .
+
+kodex:BaekGuSik
+    a kodex:PangguType , skos:Concept ;
+    skos:inScheme kodex:PangguTypeScheme ;
+    skos:prefLabel "백구"@ko , "白口"@zh ;
+    skos:definition "판구가 백색(흰색)인 형태"@ko .
+
+kodex:SeokGuSik
+    a kodex:PangguType , skos:Concept ;
+    skos:inScheme kodex:PangguTypeScheme ;
+    skos:prefLabel "세구"@ko , "細口"@zh ;
+    skos:definition "판구가 가는 선인 형태"@ko .
+
+kodex:HaekGuSik
+    a kodex:PangguType , skos:Concept ;
+    skos:inScheme kodex:PangguTypeScheme ;
+    skos:prefLabel "흑구"@ko , "黑口"@zh ;
+    skos:definition "판구가 굵은 흑선인 형태"@ko .
+
+
+# -----------------------------------------------------------------------------
+# 3.5 Role Type Vocabulary (역할 유형 통제 어휘)
+# -----------------------------------------------------------------------------
+
+kodex:RoleTypeScheme
+    a skos:ConceptScheme ;
+    skos:prefLabel "KoDEX 역할 유형 통제 어휘"@ko ,
+                   "KoDEX Role Type Vocabulary"@en .
+
+kodex:RoleType
+    a owl:Class ;
+    rdfs:subClassOf skos:Concept ;
+    rdfs:label "역할 유형"@ko , "Role Type"@en .
+
+kodex:Role_Author
+    a kodex:RoleType , skos:Concept ;
+    skos:inScheme kodex:RoleTypeScheme ;
+    skos:prefLabel "저자"@ko , "著者"@zh , "Author"@en ;
+    owl:sameAs <http://id.loc.gov/vocabulary/relators/aut> .
+
+kodex:Role_Editor
+    a kodex:RoleType , skos:Concept ;
+    skos:inScheme kodex:RoleTypeScheme ;
+    skos:prefLabel "편자"@ko , "編者"@zh , "Editor"@en ;
+    owl:sameAs <http://id.loc.gov/vocabulary/relators/edt> .
+
+kodex:Role_Annotator
+    a kodex:RoleType , skos:Concept ;
+    skos:inScheme kodex:RoleTypeScheme ;
+    skos:prefLabel "주석자"@ko , "注釋者"@zh , "Annotator"@en ;
+    owl:sameAs <http://id.loc.gov/vocabulary/relators/ann> .
+
+kodex:Role_Translator
+    a kodex:RoleType , skos:Concept ;
+    skos:inScheme kodex:RoleTypeScheme ;
+    skos:prefLabel "역자"@ko , "譯者"@zh , "Translator"@en ;
+    owl:sameAs <http://id.loc.gov/vocabulary/relators/trl> .
+
+kodex:Role_Copyist
+    a kodex:RoleType , skos:Concept ;
+    skos:inScheme kodex:RoleTypeScheme ;
+    skos:prefLabel "필사자"@ko , "筆寫者"@zh , "Copyist"@en ;
+    skos:note "MARC Relator에 대응 항목 없음. KoDEX 확장 정의."@ko .
+
+kodex:Role_Collator
+    a kodex:RoleType , skos:Concept ;
+    skos:inScheme kodex:RoleTypeScheme ;
+    skos:prefLabel "교감자"@ko , "校勘者"@zh , "Collator"@en ;
+    skos:note "MARC Relator에 대응 항목 없음. KoDEX 확장 정의."@ko .
+
+kodex:Role_Publisher
+    a kodex:RoleType , skos:Concept ;
+    skos:inScheme kodex:RoleTypeScheme ;
+    skos:prefLabel "간행자"@ko , "刊行者"@zh , "Publisher"@en ;
+    owl:sameAs <http://id.loc.gov/vocabulary/relators/pbl> .
+
+kodex:Role_WoodblockCarver
+    a kodex:RoleType , skos:Concept ;
+    skos:inScheme kodex:RoleTypeScheme ;
+    skos:prefLabel "판각자"@ko , "板刻者"@zh , "Woodblock Carver"@en ;
+    skos:note "MARC Relator에 대응 항목 없음. KoDEX 확장 정의."@ko .
+
+
+# =============================================================================
+# SECTION 4. SAMPLE INSTANCES (예시 인스턴스)
+# 실제 데이터 적용 방식을 보여주는 대표 예시
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 4.1 Work / Edition / HoldingItem (논어집주)
+# -----------------------------------------------------------------------------
+
+# 저작: 논어집주
+<https://w3id.org/kodex/work/LNJ>
+    a kodex:ClassicalWork ;
+    bf:title [ a bf:Title ;
+               bf:mainTitle "論語集註"@zh , "논어집주"@ko ] ;
+    bf:contribution [
+        a bf:Contribution ;
+        bf:agent <https://w3id.org/kodex/person/Zhu-Xi> ;
+        bf:role  <http://id.loc.gov/vocabulary/relators/aut>
+    ] ;
+    dcterms:subject  <https://w3id.org/kodex/concept/SongniHak> ;
+    dcterms:language "zh" .
+
+# 판본: 1820년 내각 목판본
+<https://w3id.org/kodex/edition/LNJ-1820-Mokpan>
+    a kodex:Edition ;
+    bf:instanceOf        <https://w3id.org/kodex/work/LNJ> ;
+    kodex:hasEditionType kodex:MokpanBon ;
+    bf:provisionActivity [
+        a bf:Publication ;
+        bf:agent <https://w3id.org/kodex/org/Naegak> ;
+        bf:place <https://w3id.org/kodex/place/Hanseong> ;
+        bf:date  "1820"^^xsd:gYear
+    ] ;
+    skos:note "刊記: 庚辰(1820)新刊內閣藏板"@zh .
+
+# 소장본: 국립중앙도서관
+<https://w3id.org/kodex/item/NL-KOL000014230>
+    a kodex:HoldingItem ;
+    bf:itemOf  <https://w3id.org/kodex/edition/LNJ-1820-Mokpan> ;
+    bf:heldBy  <https://w3id.org/kodex/org/NLK> ;
+    kodex:hasPhysicalDescription
+               <https://w3id.org/kodex/item/NL-KOL000014230-PHYS> .
+
+# 물리 기술: 국립중앙도서관 소장본
+<https://w3id.org/kodex/item/NL-KOL000014230-PHYS>
+    a kodex:PhysicalDescription ;
+    kodex:gwangwak kodex:SajuSsangbyeon ;
+    kodex:eomi     kodex:SangHaHyangHaekEomi ;
+    kodex:gyeseon  "有界"@zh ;
+    kodex:haengsu  10 ;
+    kodex:jasu     20 .
+
+
+# -----------------------------------------------------------------------------
+# 4.2 Person Instances (인물 인스턴스)
+# -----------------------------------------------------------------------------
+
+# 주희 (朱熹): 국제 전거 등록 인물
+<https://w3id.org/kodex/person/Zhu-Xi>
+    a kodex:Person ;
+    foaf:name          "주희"@ko , "朱熹"@zh , "Zhu Xi"@en ;
+    schema:alternateName "주자"@ko , "朱子"@zh ;
+    kodex:hasRole      kodex:Role_Author ;
+    owl:sameAs         <http://viaf.org/viaf/51945695> ,
+                       <http://www.wikidata.org/entity/Q182736> ,
+                       <https://id.loc.gov/authorities/names/n81008179> .
+
+# 이황 (李滉): 국제 전거 등록 인물
+<https://w3id.org/kodex/person/Yi-Hwang>
+    a kodex:Person ;
+    foaf:name          "이황"@ko , "李滉"@zh , "Yi Hwang"@en ;
+    schema:alternateName "퇴계"@ko , "退溪"@zh , "이퇴계"@ko ;
+    kodex:hasRole      kodex:Role_Author ;
+    owl:sameAs         <http://lod.nl.go.kr/resource/KAC200207663> ,
+                       <http://viaf.org/viaf/17263298> ,
+                       <http://www.wikidata.org/entity/Q486291> .
+
+# 홍직필 (洪直弼): 전거 미등록 인물
+<https://w3id.org/kodex/person/Hong-Jikpil>
+    a kodex:Person ;
+    foaf:name          "홍직필"@ko , "洪直弼"@zh ;
+    schema:alternateName "매산"@ko , "梅山"@zh ;
+    skos:note
+        "조선 후기 성리학자 (1776–1852). 국제 전거 연계 추후 확인 필요."@ko .
+
+
+# -----------------------------------------------------------------------------
+# 4.3 Organization Instances (단체·기관 인스턴스)
+# -----------------------------------------------------------------------------
+
+# 국립중앙도서관 (현대 기관)
+<https://w3id.org/kodex/org/NLK>
+    a kodex:Organization ;
+    foaf:name  "국립중앙도서관"@ko , "National Library of Korea"@en ;
+    owl:sameAs <http://www.wikidata.org/entity/Q495005> .
+
+# 내각 (조선시대 역사적 단체)
+<https://w3id.org/kodex/org/Naegak>
+    a kodex:Organization ;
+    foaf:name          "내각"@ko , "內閣"@zh ;
+    schema:alternateName "규장각내각"@ko ;
+    skos:note
+        "조선 정조 연간 설치된 규장각 산하 출판 담당 관서."@ko .
+
+# 성균관 (조선시대 역사적 단체)
+<https://w3id.org/kodex/org/Sungkyunkwan>
+    a kodex:Organization ;
+    foaf:name          "성균관"@ko , "成均館"@zh , "Sungkyunkwan"@en ;
+    schema:alternateName "반궁"@ko , "泮宮"@zh , "태학"@ko , "太學"@zh ;
+    owl:sameAs         <http://www.wikidata.org/entity/Q487180> .
+
+
+# -----------------------------------------------------------------------------
+# 4.4 Place Instances (장소 인스턴스)
+# -----------------------------------------------------------------------------
+
+<https://w3id.org/kodex/place/Hanseong>
+    a kodex:Place ;
+    skos:prefLabel "한성"@ko , "漢城"@zh ;
+    skos:altLabel  "한양"@ko , "漢陽"@zh , "서울"@ko ;
+    skos:note      "조선시대 수도. 현재의 서울에 해당한다."@ko ;
+    owl:sameAs     <http://www.wikidata.org/entity/Q624467> .
+
+
+# -----------------------------------------------------------------------------
+# 4.5 Subject Concept Instances (주제 개념 인스턴스)
+# -----------------------------------------------------------------------------
+
+<https://w3id.org/kodex/concept/SongniHak>
+    a skos:Concept ;
+    skos:prefLabel "성리학"@ko , "性理學"@zh , "Neo-Confucianism"@en ;
+    skos:altLabel  "주자학"@ko , "朱子學"@zh ;
+    skos:exactMatch
+        <http://lod.nl.go.kr/resource/KSH1998035178> ;
+        # 국립중앙도서관 국가서지 LOD 주제명 URI (lod.nl.go.kr)
+    skos:broadMatch
+        <http://id.loc.gov/authorities/subjects/sh85031069> ;
+        # sh85031069: Confucianism (LCSH)
+        # 성리학은 유교의 하위 개념이므로 broadMatch 처리
+    skos:historyNote
+        "국립중앙도서관 LOD URI 확인 경로: librarian.nl.go.kr (termId=50514) → lod.nl.go.kr (KSH1998035178)"@ko .
+
+
+# =============================================================================
+# END OF KODEX ONTOLOGY v1.0
+# Repository: https://github.com/SHINEUNSUN1027/AKSDH
+# Permanent URI: https://w3id.org/kodex/
+# =============================================================================
+
